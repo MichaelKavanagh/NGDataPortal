@@ -14,12 +14,12 @@ Main Scripts
 resource_filepath = os.path.join(os.path.dirname(__file__), 'stream_to_resource_id.json')
 with open(resource_filepath, 'r') as fp:
     stream_to_id_map = json.load(fp)
-    
+
 URL = 'http://data.nationalgrideso.com'
 
 ## Main class
-class Wrapper():        
-    def NG_request(self, params={}):    
+class Wrapper():
+    def NG_request(self, params={}):
         url_root = self.get_url('datastore_search')
 
         params.update({'resource_id':self.resource_id})
@@ -74,7 +74,7 @@ class Wrapper():
 
             return response['result']
 
-    def raise_(self, err_txt, error=ValueError): 
+    def raise_(self, err_txt, error=ValueError):
         raise error(err_txt)
 
     def check_request_success(self, r_json):
@@ -82,9 +82,9 @@ class Wrapper():
             err_msg = r_json['error']['message']
             self.raise_(err_msg)
 
-    date_between = lambda self, dt_col, start_date, end_date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" BETWEEN \'{start_date}\'::timestamp AND \'{end_date}\'::timestamp ORDER BY "{dt_col}"' 
-    date_less_than = lambda self, dt_col, date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" < \'{date}\'::timestamp ORDER BY "{dt_col}"' 
-    date_greater_than = lambda self, dt_col, date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" > \'{date}\'::timestamp ORDER BY "{dt_col}"' 
+    date_between = lambda self, dt_col, start_date, end_date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" BETWEEN \'{start_date}\'::timestamp AND \'{end_date}\'::timestamp ORDER BY "{dt_col}"'
+    date_less_than = lambda self, dt_col, date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" < \'{date}\'::timestamp ORDER BY "{dt_col}"'
+    date_greater_than = lambda self, dt_col, date: f'SELECT * from "{self.resource_id}" WHERE "{dt_col}" > \'{date}\'::timestamp ORDER BY "{dt_col}"'
 
     def form_dt_rng_sql_query(self, dt_col, start_date=None, end_date=None):
         start_end_date_exist = (start_date!=None, end_date!=None)
@@ -117,7 +117,7 @@ class Wrapper():
 
         elif sql != '':
             params.update({'sql':sql})
-            
+
         elif 'sql' in params.keys():
             params.pop('sql')
 
@@ -134,15 +134,15 @@ class Wrapper():
         df = pd.DataFrame(r_json['result']['records'])
 
         return df
-    
+
     def assign_stream(self, stream):
         self.stream = stream
         self.resource_id = stream_to_id_map[self.stream]
-        
+
     def __init__(self, stream):
         self.assign_stream(stream)
-        self.streams = list(stream_to_id_map.keys()) 
+        self.streams = list(stream_to_id_map.keys())
 
-    
+
 if __name__ == "__main__":
     main()

@@ -15,10 +15,12 @@ resource_filepath = os.path.join(os.path.dirname(__file__), 'stream_to_resource_
 with open(resource_filepath, 'r') as fp:
     stream_to_id_map = json.load(fp)
     
+URL = 'http://data.nationalgrideso.com'
+
 ## Main class
 class Wrapper():        
     def NG_request(self, params={}):    
-        url_root = 'https://national-grid-admin.ckan.io/api/3/action/datastore_search'
+        url_root = self.get_url('datastore_search')
 
         params.update({'resource_id':self.resource_id})
 
@@ -28,6 +30,9 @@ class Wrapper():
         r = requests.get(url_root, params=params)
 
         return r
+
+    def get_url(self, action: str, version: int = 3):
+        return URL + '/api/{version}/action/{action}'.format(version=version, action=action)
 
     def raise_(self, err_txt, error=ValueError): 
         raise error(err_txt)

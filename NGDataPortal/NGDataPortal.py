@@ -31,8 +31,48 @@ class Wrapper():
 
         return r
 
+    def get_package_resources(self, package_id: str):
+        url = self.get_url('package_show')
+        response = self.json_request(url, params={'id': package_id})
+        return response['resources']
+
+    def get_package_list(self):
+        url = self.get_url('package_list')
+        return self.json_request(url)
+
+    def get_group_list(self):
+        url = self.get_url('group_list')
+        return self.json_request(url)
+
+    def get_tag_list(self):
+        url = self.get_url('tag_list')
+        return self.json_request(url)
+
     def get_url(self, action: str, version: int = 3):
         return URL + '/api/{version}/action/{action}'.format(version=version, action=action)
+
+    def json_request(self, url: str, params: dict = None):
+        try:
+            r = requests.get(url, params = params)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            # TODO: log something
+            raise e
+        else:
+            response = r.json()
+            if response['success'] != True:
+                # TODO: check the value of the "error" key.
+                # {
+                #     "help": "Creates a package",
+                #     "success": false,
+                #     "error": {
+                #         "message": "Access denied",
+                #         "__type": "Authorization Error"
+                #         }
+                #  }
+                raise
+
+            return response['result']
 
     def raise_(self, err_txt, error=ValueError): 
         raise error(err_txt)
